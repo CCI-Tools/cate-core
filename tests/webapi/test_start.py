@@ -26,6 +26,7 @@ class WebAPITest(AsyncHTTPTestCase):
         self.assertIn('name', json_dict['content'])
         self.assertIn('version', json_dict['content'])
         self.assertIn('user_root_mode', json_dict['content'])
+        self.assertFalse(json_dict['content']['user_root_mode'])
 
 
 # Tests if root of url can be changed, mostly relevant for CateHub context.
@@ -35,6 +36,7 @@ class WebAPIHubContextTest(WebAPITest):
     def get_app(self):
         self.url = os.environ.get('JUPYTERHUB_SERVICE_PREFIX')
         return create_application(user_root_path=None)
+
 
 @unittest.skipIf(os.environ.get('CATE_DISABLE_WEB_TESTS', None) == '1', 'CATE_DISABLE_WEB_TESTS = 1')
 class WebAPIRelativeFSTest(AsyncHTTPTestCase):
@@ -48,15 +50,3 @@ class WebAPIRelativeFSTest(AsyncHTTPTestCase):
         self.assertIn('user_root_mode', json_dict['content'])
         self.assertTrue(json_dict['content']['user_root_mode'])
 
-
-@unittest.skipIf(os.environ.get('CATE_DISABLE_WEB_TESTS', None) == '1', 'CATE_DISABLE_WEB_TESTS = 1')
-class WebAPIFSTest(AsyncHTTPTestCase):
-    def get_app(self):
-        return create_application(user_root_path=None)
-
-    def test_base_url(self):
-        response = self.fetch('/')
-        self.assertEqual(response.code, 200)
-        json_dict = json.loads(response.body.decode('utf-8'))
-        self.assertIn('user_root_mode', json_dict['content'])
-        self.assertFalse(json_dict['content']['user_root_mode'])
