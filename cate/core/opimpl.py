@@ -60,6 +60,7 @@ def normalize_impl(ds: xr.Dataset) -> xr.Dataset:
     :param ds: The dataset to normalize.
     :return: The normalized dataset, or the original dataset, if it is already "normal".
     """
+    ds = _normalize_to_lat_lon(ds)
     ds = normalize_coord_vars(ds)
     ds = _normalize_lat_lon(ds)
     ds = _normalize_lat_lon_2d(ds)
@@ -70,6 +71,14 @@ def normalize_impl(ds: xr.Dataset) -> xr.Dataset:
     ds = _normalize_jd2datetime(ds)
     return ds
 
+def _normalize_to_lat_lon(ds: xr.Dataset) -> xr.Dataset:
+    """
+    In case the dataset has no lat/lon coordinates but cartesian coordinates,
+    it will be reprojected to have lat/lon dimensions.
+    :param ds: some xarray dataset
+    :return: A dataset with lat / lon coordinates
+    """
+    pass
 
 def _normalize_inverted_lat(ds: xr.Dataset) -> xr.Dataset:
     """

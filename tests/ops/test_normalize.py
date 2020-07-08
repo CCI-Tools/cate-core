@@ -27,6 +27,41 @@ def assertDatasetEqual(expected, actual):
 
 
 class TestNormalize(TestCase):
+
+    # def test_normalize_to_lat_lon(self):
+    #     """
+    #     Test nominal execution
+    #     """
+        # dims = ('time', 'y', 'x')
+        # attribs = {'valid_min': 0., 'valid_max': 1.}
+        #
+        # t_size = 2
+        # y_size = 3
+        # x_size = 4
+        #
+        # a_data = np.random.random_sample((t_size, y_size, x_size))
+        # b_data = np.random.random_sample((t_size, y_size, x_size))
+        # time_data = [1, 2]
+        # lat_data = [[10., 10., 10., 10.],
+        #             [20., 20., 20., 20.],
+        #             [30., 30., 30., 30.]]
+        # lon_data = [[-10., 0., 10., 20.],
+        #             [-10., 0., 10., 20.],
+        #             [-10., 0., 10., 20.]]
+        # dataset = xr.Dataset({'a': (dims, a_data, attribs),
+        #                       'b': (dims, b_data, attribs)
+        #                       },
+        #                      {'time': (('time',), time_data),
+        #                       'lat': (('y', 'x'), lat_data),
+        #                       'lon': (('y', 'x'), lon_data)
+        #                       },
+        #                      {'geospatial_lon_min': -15.,
+        #                       'geospatial_lon_max': 25.,
+        #                       'geospatial_lat_min': 5.,
+        #                       'geospatial_lat_max': 35.
+        #                       }
+        #                      )
+
     def test_normalize_lon_lat_2d(self):
         """
         Test nominal execution
