@@ -487,6 +487,11 @@ def _get_variables_from_feature(feature: dict) -> List:
     return variable_dicts
 
 
+async def get_bbox_from_feature(feature: dict) -> Optional[Tuple]:
+    feature_info = _extract_feature_info(feature)
+    return feature_info[6]
+
+
 async def _get_infos_from_feature(session, feature: dict, dataset_id: str) -> tuple:
     feature_info = _extract_feature_info(feature)
     opendap_dds_url = f"{feature_info[4]['Opendap']}.dds"
@@ -552,6 +557,20 @@ async def _fetch_meta_info(dataset_id: str, odd_url: str, metadata_url: str, var
         return meta_info_dict
 
 
+async def _fetch_bbox(dataset_id: str, drs_id: str) -> List[str]:
+    async with aiohttp.ClientSession() as session:
+        feature = await _fetch_feature_at(session,
+                                          _OPENSEARCH_CEDA_URL,
+                                          dict(parentIdentifier=dataset_id,
+                                               drsId=drs_id),
+                                          1
+                                          )
+        if feature:
+            feature_info = _extract_feature_info(feature)
+            return feature_info[5]
+    return []
+
+
 async def _fetch_file_list_json(dataset_id: str, drs_id: str, monitor: Monitor = Monitor.NONE) -> Sequence:
     feature_list = await _fetch_opensearch_feature_list(_OPENSEARCH_CEDA_URL,
                                                         dict(parentIdentifier=dataset_id,
@@ -573,6 +592,9 @@ async def _fetch_file_list_json(dataset_id: str, drs_id: str, monitor: Monitor =
 
 
 def _extract_feature_info(feature: dict) -> List:
+    bbox = feature.get("bbox", [])
+    if bbox:
+        bbox = [float(bbox[0][0]), float(bbox[0][1]), float(bbox[1][0]), float(bbox[1][1])]
     feature_props = feature.get("properties", {})
     filename = feature_props.get("title", "")
     date = feature_props.get("date", None)
@@ -592,7 +614,7 @@ def _extract_feature_info(feature: dict) -> List:
     urls = {}
     for related_link in related_links:
         urls[related_link.get("title")] = related_link.get("href")
-    return [filename, start_time, end_time, file_size, urls]
+    return [filename, start_time, end_time, file_size, urls, bbox]
 
 
 class EsaCciOdpDataStore(DataStore):
@@ -797,6 +819,21 @@ class EsaCciOdpDataStore(DataStore):
                 continue
             meta_info = meta_info.copy()
             meta_info.update(json_dict)
+            drs_metadata_dir = os.path.join(local_metadata_dataset_dir, drs_id)
+            bbox = await _load_or_fetch_json(_fetch_bbox,
+                                             fetch_json_args=[datasource_id,
+                                                              drs_id],
+                                             fetch_json_kwargs=dict(),
+                                             cache_used=self.index_cache_used,
+                                             cache_dir=drs_metadata_dir,
+                                             cache_json_filename=f'bbox.txt',
+                                             cache_timestamp_filename=f'bbox-timestamp.txt',
+                                             cache_expiration_days=self.index_cache_expiration_days)
+            if bbox:
+                meta_info['bbox_minx'] = bbox[0]
+                meta_info['bbox_miny'] = bbox[1]
+                meta_info['bbox_maxx'] = bbox[2]
+                meta_info['bbox_maxy'] = bbox[3]
             self._adjust_json_dict(meta_info, drs_id)
             meta_info['cci_project'] = meta_info['ecv']
             meta_info['fid'] = datasource_id
