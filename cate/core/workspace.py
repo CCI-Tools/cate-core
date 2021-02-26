@@ -271,8 +271,11 @@ class Workspace:
         base_dir = json_dict.get('base_dir', None)
         workflow_json = json_dict.get('workflow', {})
         is_modified = json_dict.get('is_modified', False)
+        is_scratch = json_dict.get('is_scratch', False)
         workflow = Workflow.from_json_dict(workflow_json)
-        return Workspace(base_dir, workflow, is_modified=is_modified)
+        workspace = Workspace(base_dir, workflow, is_modified=is_modified)
+        workspace.is_scratch = is_scratch
+        return workspace
 
     def to_json_dict(self):
         with self._lock:
