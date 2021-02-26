@@ -69,9 +69,6 @@ class WebSocketService:
     def _serialize_workspace(self, workspace: Workspace) -> dict:
         """Serialize outgoing workspace JSON to have base_dir relative to workspace manager's root path."""
         workspace_json = workspace.to_json_dict()
-        if self.workspace_manager.root_path:
-            workspace_json['base_dir'] = os.path.sep + os.path.relpath(workspace_json['base_dir'],
-                                                                       self.workspace_manager.root_path)
         return workspace_json
 
     def get_config(self) -> dict:
