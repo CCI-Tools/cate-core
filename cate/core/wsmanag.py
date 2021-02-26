@@ -58,13 +58,6 @@ class WorkspaceManager(metaclass=ABCMeta):
     def resolve_path(self, path: str) -> str:
         pass
 
-    # TODO (forman): remove me! this method exists, because new_workspace() and save_workspace_as() take names
-    #  instead of paths. Better to add flags to new_workspace() and save_workspace_as() to indicate
-    #  they are not paths, but just names which will be relative to default "~/workspaces" location.
-    @abstractmethod
-    def resolve_workspace_dir(self, path_or_name: str) -> str:
-        pass
-
     @abstractmethod
     def get_open_workspaces(self) -> List[Workspace]:
         pass
@@ -216,12 +209,6 @@ class FSWorkspaceManager(WorkspaceManager):
     @property
     def root_path(self) -> Optional[str]:
         return self._root_path
-
-    def resolve_workspace_dir(self, path_or_name: str) -> str:
-        if self._is_no_path(path_or_name):
-            return os.path.join(self.workspaces_dir, path_or_name)
-        else:
-            return self.resolve_path(path_or_name)
 
     def resolve_path(self, path: str) -> str:
         """Turn path into a normalized, absolute path."""

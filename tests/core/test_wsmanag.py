@@ -390,12 +390,3 @@ class FSWorkspaceManagerTest(WorkspaceManagerTestMixin, unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             ws_manag.resolve_path(os.path.join(os.path.sep, '..', 'data'))
         self.assertTrue(f'{cm.exception}'.startswith('access denied: '))
-
-    def test_resolve_workspace_dir(self):
-        ws_manag = self.new_workspace_manager()
-        self.assertEqual(os.path.join(ws_manag.root_path, 'workspaces', 'test-1'),
-                         ws_manag.resolve_workspace_dir('test-1'))
-        self.assertEqual(os.path.join(ws_manag.root_path, 'my_workspaces', 'test-1'),
-                         ws_manag.resolve_workspace_dir(os.path.join('my_workspaces', 'test-1')))
-        self.assertEqual(os.path.join(ws_manag.root_path, 'my_workspaces', 'test-1'),
-                         ws_manag.resolve_workspace_dir(os.path.join(os.path.sep, 'my_workspaces', 'test-1')))

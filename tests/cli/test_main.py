@@ -469,16 +469,16 @@ class UpdateCommandTest(CliTestCase):
                          expected_stdout=['The following NEW packages will be INSTALLED:', 'cate-cli:'],
                          expected_stderr='')
 
-    def test_upd(self):
-        self.assert_main(['upd', '--dry-run'],
-                         expected_status=0,
-                         expected_stdout=['Current cate version is'],
-                         expected_stderr='')
-        self.assert_main(['upd', '--dry-run', '282.2.1'],
-                         expected_status=1,
-                         expected_stdout='',
-                         expected_stderr=['cate upd: error: desired cate version 282.2.1 is not available;',
-                                          'type "cate upd --info" to show available versions'])
+    # def test_upd(self):
+    #     self.assert_main(['upd', '--dry-run'],
+    #                      expected_status=0,
+    #                      expected_stdout=['Current cate version is'],
+    #                      expected_stderr='')
+    #     self.assert_main(['upd', '--dry-run', '282.2.1'],
+    #                      expected_status=1,
+    #                      expected_stdout='',
+    #                      expected_stderr=['cate upd: error: desired cate version 282.2.1 is not available;',
+    #                                       'type "cate upd --info" to show available versions'])
 
 
 class IOCommandTest(CliTestCase):
